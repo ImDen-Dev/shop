@@ -9,7 +9,6 @@ exports.getIndex = (req, res) => {
         docTitle: 'Index',
         path: '/',
         cssStyles: ['product'],
-        isAuth: req.session.isLoggedIn,
       });
     })
     .catch((error) => console.log(error));
@@ -23,7 +22,6 @@ exports.getProducts = (req, res) => {
         docTitle: 'My Shop',
         path: '/products',
         cssStyles: ['product'],
-        isAuth: req.session.isLoggedIn,
       });
     })
     .catch((error) => console.log(error));
@@ -38,7 +36,6 @@ exports.getProduct = (req, res) => {
         docTitle: product.title,
         path: '/products',
         cssStyles: [],
-        isAuth: req.session.isLoggedIn,
       });
     })
     .catch((error) => console.log(error));
@@ -55,7 +52,6 @@ exports.getCart = (req, res) => {
         path: '/cart',
         products: products,
         cssStyles: ['cart'],
-        isAuth: req.session.isLoggedIn,
       });
     })
     .catch((error) => console.log(error));
@@ -97,7 +93,7 @@ exports.postOrder = (req, res) => {
       const order = new Order({
         products: products,
         user: {
-          name: req.user.name,
+          email: req.user.email,
           userId: req.user,
         },
       });
@@ -121,7 +117,6 @@ exports.getOrders = (req, res) => {
         path: '/orders',
         orders: orders,
         cssStyles: ['orders'],
-        isAuth: req.session.isLoggedIn,
       });
     })
     .catch((error) => console.log(error));

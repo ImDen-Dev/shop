@@ -8,7 +8,6 @@ exports.getProducts = (req, res) => {
         docTitle: 'Admin products',
         path: '/admin/products',
         cssStyles: ['product'],
-        isAuth: req.session.isLoggedIn,
       });
     })
     .catch((error) => console.log(error));
@@ -20,7 +19,6 @@ exports.getAddProduct = (req, res) => {
     path: '/admin/add-product',
     cssStyles: ['forms', 'product'],
     editMode: false,
-    isAuth: req.session.isLoggedIn,
   });
 };
 
@@ -60,7 +58,6 @@ exports.getEditProduct = (req, res) => {
         cssStyles: ['forms', 'product'],
         editMode: editMode,
         prod: prod,
-        isAuth: req.session.isLoggedIn,
       });
     })
     .catch((error) => console.log(error));

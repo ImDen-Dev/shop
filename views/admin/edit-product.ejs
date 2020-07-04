@@ -27,7 +27,7 @@
         <%if (editMode) {%>
             <input type="hidden" name="productId" value="<%=prod._id %>">
         <% } %>
-
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         <button class="btn" type="submit"><%= editMode ? 'Update ' : 'Add '%>product</button>
     </form>
 </main>
