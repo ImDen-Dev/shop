@@ -1,0 +1,6 @@
+.prettierignore
+*.txt
+*.pug
+*.hbs
+*.ejs
+.gitignore
