@@ -6,7 +6,7 @@ const { validationResult } = require('express-validator');
 
 const User = require('../models/user');
 
-const transporter = nodemailer.createTransport({
+nodemailer.createTransport({
   service: 'gmail',
   secure: false,
   auth: {
@@ -14,6 +14,15 @@ const transporter = nodemailer.createTransport({
     pass: 'hqklarejrqiqnajf',
   },
 });
+
+// const transporter = nodemailer.createTransport({
+//   service: 'gmail',
+//   secure: false,
+//   auth: {
+//     user: 'neckromant90@gmail.com',
+//     pass: 'hqklarejrqiqnajf',
+//   },
+// });
 
 exports.getLogin = (req, res) => {
   let message = req.flash('error');
@@ -32,7 +41,7 @@ exports.getLogin = (req, res) => {
   });
 };
 
-exports.postLogin = (req, res) => {
+exports.postLogin = (req, res, next) => {
   const { email, password } = req.body;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -78,10 +87,18 @@ exports.postLogin = (req, res) => {
             validationErrors: [],
           });
         })
-        .catch((error) => console.log(error));
+        .catch((err) => {
+          const error = new Error(err);
+          error.httpStatusCode = 500;
+          return next(error);
+        });
     })
 
-    .catch((error) => console.log(error));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 exports.getSignup = (req, res) => {
@@ -163,7 +180,7 @@ exports.getReset = (req, res) => {
   });
 };
 
-exports.postReset = (req, res) => {
+exports.postReset = (req, res, next) => {
   crypto.randomBytes(32, (err, buf) => {
     if (err) {
       console.log(err);
@@ -196,11 +213,15 @@ exports.postReset = (req, res) => {
         //     console.log('Mail error', error);
         //   });
       })
-      .catch((error) => console.log(error));
+      .catch((err) => {
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        return next(error);
+      });
   });
 };
 
-exports.getNewPassword = (req, res) => {
+exports.getNewPassword = (req, res, next) => {
   const token = req.params.token;
   User.findOne({ resetToken: token, resetTokenExpiration: { $gt: Date.now() } })
     .then((user) => {
@@ -219,10 +240,14 @@ exports.getNewPassword = (req, res) => {
         userToken: token,
       });
     })
-    .catch((error) => console.log(error));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
-exports.postNewPassword = (req, res) => {
+exports.postNewPassword = (req, res, next) => {
   const { password, userToken, userId } = req.body;
   let resetUser;
   User.findOne({
@@ -243,5 +268,9 @@ exports.postNewPassword = (req, res) => {
     .then(() => {
       res.redirect('/login');
     })
-    .catch((error) => console.log(error));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
