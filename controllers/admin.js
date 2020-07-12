@@ -1,5 +1,7 @@
 const { validationResult } = require('express-validator');
 
+const fileHelper = require('../util/file');
+
 const Product = require('../models/product');
 
 exports.getProducts = (req, res, next) => {
@@ -32,8 +34,28 @@ exports.getAddProduct = (req, res) => {
 };
 
 exports.postAddProduct = (req, res, next) => {
-  const { title, imageUrl, price, description } = req.body;
+  const { title, price, description } = req.body;
+  const image = req.file;
   const errors = validationResult(req);
+  console.log(image);
+
+  if (!image) {
+    return res.status(422).render('admin/edit-product', {
+      docTitle: 'Add product',
+      path: '/admin/add-product',
+      cssStyles: ['forms', 'product'],
+      editMode: false,
+      prod: {
+        title,
+        price,
+        description,
+      },
+      errorMsg: 'File attached is not an image!',
+      hasError: true,
+      validationErrors: errors.array(),
+    });
+  }
+
   if (!errors.isEmpty()) {
     return res.status(422).render('admin/edit-product', {
       docTitle: 'Add product',
@@ -51,6 +73,8 @@ exports.postAddProduct = (req, res, next) => {
       validationErrors: errors.array(),
     });
   }
+
+  const imageUrl = image.path;
 
   const product = new Product({
     title,
@@ -105,7 +129,14 @@ exports.getEditProduct = (req, res, next) => {
 exports.postEditProduct = (req, res, next) => {
   const { productId, title, price, description, imageUrl } = req.body;
   const userId = req.user._id;
-  const product = { title, price, description, imageUrl, _id: productId };
+  const image = req.file;
+  const product = {
+    title,
+    price,
+    description,
+    imageUrl: image ? image.path : imageUrl,
+    _id: productId,
+  };
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
@@ -121,7 +152,19 @@ exports.postEditProduct = (req, res, next) => {
     });
   }
 
-  Product.findOneAndUpdate({ _id: productId, userId: userId }, product)
+  Product.findOne({ _id: productId, userId: userId })
+    .then((product) => {
+      product.title = title;
+      product.price = price;
+      product.description = description;
+      product._id = productId;
+      if (image) {
+        fileHelper.deleteFile(product.imageUrl);
+        product.imageUrl = image.path;
+      }
+
+      return product.save();
+    })
     .then((result) => {
       if (result) {
         console.log('Product was Updated');
@@ -139,6 +182,12 @@ exports.postDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
   Product.findOneAndRemove({ _id: prodId, userId: req.user.id })
     .then((result) => {
+      if (!result) {
+        return next(new Error('Product not found'));
+      }
+      return fileHelper.deleteFile(result.imageUrl);
+    })
+    .then(() => {
       console.log('DESTROYED PRODUCT');
       res.redirect('/admin/products');
     })

@@ -4,3 +4,5 @@
 *.hbs
 *.ejs
 .gitignore
+images
+*.pdf

@@ -92,3 +92,19 @@ node_modules
 
 #Api keys
 util/API_KEYS.js
+
+images/*
+data/invoices/*
+
+
+### VisualStudioCode ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+### VisualStudioCode Patch ###
+# Ignore all local history of files
+.history

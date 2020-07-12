@@ -74,7 +74,7 @@ exports.postLogin = (req, res, next) => {
             req.session.isLoggedIn = true;
             return req.session.save((err) => {
               console.log(err);
-              res.redirect('/');
+              return res.redirect('/');
             });
           }
           req.flash('error', 'Invalid email or password');
@@ -123,12 +123,10 @@ exports.postSignup = (req, res) => {
   const { email, password, confirmPassword } = req.body;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    console.log(errors.array());
     return res.status(422).render('auth/signup', {
       docTitle: 'Sign-up',
       path: '/signup',
       cssStyles: ['forms', 'login-form'],
-      isAuth: false,
       errorMessage: errors.array()[0].msg,
       oldInput: { email, password, confirmPassword },
       validationErrors: errors.array(),
