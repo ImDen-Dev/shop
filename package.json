@@ -3,9 +3,13 @@
   "version": "1.0.0",
   "description": "My first App",
   "main": "app.js",
+  "engines": {
+    "node": "14.3.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app.js",
+    "start": "export NODE_ENV=production MONGO_USER=fatboy MONGO_PASSWORD=LTj0OHjJgCr5P3GK MONGO_DB=shop STRIPE_KEY=sk_test_51H6HxzLoWlvI0CNwWMejlNcJByQMDMIFAeu5pPHlegMq3qS7LYxVB7waRLllztXYnoJdy7USuAvdXkqLSCcbRSpp00mxs99MJl & node app.js",
+    "start:dev": "nodemon app.js",
     "debug": "nodemon --inspect app.js"
   },
   "author": "Denis Diachuk",
@@ -13,6 +17,7 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
+    "compression": "^1.7.4",
     "connect-flash": "^0.1.1",
     "connect-mongodb-session": "^2.3.3",
     "csurf": "^1.11.0",
@@ -20,8 +25,10 @@
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "express-validator": "^6.6.0",
+    "helmet": "^4.0.0",
     "mongodb": "^3.5.9",
     "mongoose": "^5.9.20",
+    "morgan": "^1.10.0",
     "multer": "^1.4.2",
     "nodemailer": "^6.4.10",
     "pdfkit": "^0.11.0",

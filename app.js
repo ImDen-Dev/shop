@@ -1,4 +1,6 @@
 const path = require('path');
+const fs = require('fs');
+const https = require('https');
 
 const express = require('express');
 const session = require('express-session');
@@ -8,6 +10,9 @@ const mongoose = require('mongoose');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
 const flash = require('connect-flash');
+const helmet = require('helmet');
+const compression = require('compression');
+const morgan = require('morgan');
 
 const MONGODB_API = require('./util/API_KEYS');
 const User = require('./models/user');
@@ -21,9 +26,12 @@ const authRouter = require('./routes/auth');
 const errorController = require('./controllers/error');
 
 const store = new MongoDBStore({
-  uri: MONGODB_API.MONGODB_API_KEY,
+  uri: `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@node-app-cluster-jxe4x.gcp.mongodb.net/${process.env.MONGO_DB}?retryWrites=true&w=majority`,
   collection: 'sessions',
 });
+
+// const certificate = fs.readFileSync('server.cert');
+// const privateKey = fs.readFileSync('server.key');
 
 const fileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -50,6 +58,15 @@ const fileFilter = (req, file, cb) => {
 };
 
 app.set('view engine', 'ejs');
+
+const accessLogStream = fs.createWriteStream(
+  path.join(__dirname, 'access.log'),
+  { flags: 'a' }
+);
+
+app.use(helmet());
+app.use(compression());
+app.use(morgan('combined', { stream: accessLogStream }));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(
@@ -117,6 +134,9 @@ mongoose
     useFindAndModify: false,
   })
   .then((result) => {
-    app.listen(3000);
+    // https
+    //   .createServer({ key: privateKey, cert: certificate }, app)
+    //   .listen(process.env.PORT || 4000);
+    app.listen(process.env.PORT || 4000);
   })
   .catch((error) => console.log(error));

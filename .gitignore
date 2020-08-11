@@ -95,7 +95,9 @@ util/API_KEYS.js
 
 images/*
 data/invoices/*
-
+server.cert
+server.key
+nodemon.json
 
 ### VisualStudioCode ###
 .vscode/*

@@ -6,9 +6,7 @@ const PDFDocument = require('pdfkit');
 const Product = require('../models/product');
 const Order = require('../models/order');
 
-const stripe = require('stripe')(
-  'sk_test_51H6HxzLoWlvI0CNwWMejlNcJByQMDMIFAeu5pPHlegMq3qS7LYxVB7waRLllztXYnoJdy7USuAvdXkqLSCcbRSpp00mxs99MJl'
-);
+const stripe = require('stripe')(process.env.STRIPE_KEY);
 
 let ITEMS_PER_PAGE = 2;
 
